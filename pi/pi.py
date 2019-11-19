@@ -19,6 +19,10 @@ class proforma_invoice(osv.osv):
         'description': fields.char('Description'),
         'vendor_id': fields.many2one('res.partner', 'Vendor name', select=True),
         'total': fields.float('Grand Total'),
+        'curency': fields.selection([('usd', 'USD$'), ('bdt', 'BDT'), ('others', 'Others')], string='Curency', default='usd'),
+        'equivalant': fields.float('Conversion Rate BDT'),
+        'ptotal': fields.float('Total'),
+        'stotal': fields.float('Total'),
 
         'state': fields.selection([
             ('pending', 'Pending'),
@@ -198,31 +202,54 @@ class pi_product_line(osv.osv):
     _name = 'pi.product.line'
     _description = "PI Product List"
 
+
+    def _calculateunit(self,cr,uid,ids,field_name,arg,context=None):
+        # unitcalculate={}
+        # sum=0
+        # for item in self.pool.get("proforma.invoice").browse(cr,uid,ids,context=None):
+        #     # current_rate=item.equivalant
+        #     for items in self.pool.get('pi.product.line').browse(cr,uid,ids,context=None):
+        #
+        #         currencyunit=items.cunit_price
+        #         # bdtunit=current_rate*currencyunit
+        #         # import pdb
+        #         # pdb.set_trace()
+        #
+        # for record in self.browse(self,cr,uid,ids,context=None):
+        #     unitcalculate[record.id]=bdtunit
+
+        return 0
+
     _columns = {
         'pi_id': fields.many2one('proforma.invoice', 'PI Ids', required=True, ondelete='cascade', select=True,readonly=True),
         'product_id': fields.many2one('product.product', 'Product Name', required=True),
-        'unit_price':fields.float('Unit Price (BDT)'),
-        'currency_price':fields.float('Currency Price'),
-        'conversion_rate':fields.float('Conversion Rate'),
-        'total_price':fields.float('Total Price'),
-        'quantity':fields.float('Quantity'),
+        'cunit_price':fields.float('Unit Price (Currency)'),
+        'bunit_price': fields.function(_calculateunit,string='Unit Price (BDT)',type='float'),
+        'btotal_price':fields.float('Total Price (BDT)'),
+        'ctotal_price':fields.float('Total Price (Curency)'),
+        'quantity':fields.float('Quantity/KG'),
         'calculated_unit_price':fields.float('Calculated Unit Price'),
         'calculated_total_price':fields.float('Calculated Total Price'),
     }
 
-    def onchange_product(self,cr,uid,ids,product_id,context=None):
+    def onchange_product(self,cr,uid,ids,product_id,pi_id,context=None):
         tests = {'values': {}}
         dep_object = self.pool.get('product.product').browse(cr, uid, product_id, context=None)
-        abc = {'unit_price': dep_object.list_price,'total_price':dep_object.list_price}
+        # pi_obj=self.pool.get('proforma.invoice').browse(cr, uid, pi_id, context=None)
+        # import pdb
+        # pdb.set_trace()
+        abc = {'cunit_price': dep_object.list_price,'ctotal_price':dep_object.list_price}
         tests['value'] = abc
         # import pdb
         # pdb.set_trace()
         return tests
 
-    def onchange_quantity(self,cr,uid,ids,product_id,unit_price,quantity,context=None):
+    def onchange_quantity(self,cr,uid,ids,product_id,quantity,cunit_price,context=None):
         tests = {'values': {}}
         dep_object = self.pool.get('product.product').browse(cr, uid, product_id, context=None)
-        abc = {'total_price':round(unit_price*quantity)}
+        cunit_prices=cunit_price
+        total=cunit_prices*quantity
+        abc = {'ctotal_price': total}
         tests['value'] = abc
         # import pdb
         # pdb.set_trace()
@@ -244,7 +271,6 @@ class pi_service_line(osv.osv):
     _columns = {
         'pi_id': fields.many2one('proforma.invoice', 'PI Ids', ondelete='cascade', select=True, readonly=True),
         'service_cost': fields.float('Service Cost'),
-        'total_cost': fields.float('Total Cost'),
         'service_name': fields.char('Service name'),
 
     }
