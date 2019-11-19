@@ -9,6 +9,14 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="PI">
+                     <header>
+                        <button name="confirm" string="Confirm" class="oe_highlight" type="object"/>
+                        <button name="cancel_pi" string="Cancel Receipt" type="object" />
+                        <button name="convert_to_po" string="Convert to PO" type="object" confirm="Are you sure you want to create PO?"/>
+                         <button name="add_service" type="object" string="Add Service"/>
+                         <button name="print_pi" type="object" string="Print"/>
+
+                </header>
                     <sheet>
                         <h1>
                             <label string="Proforma Invoice"/>
@@ -18,6 +26,7 @@
                                 <field name="vendor_id"/>
                                 <field name="description"/>
                                 <field name="total"/>
+                                <field name="pi_date"/>
                             </group>
 
                         </group>
@@ -29,9 +38,9 @@
 
                                 <field name="product_lines" mode="tree">
                                     <tree string="Select Deliveries" editable="top">
-                                        <field name="product_id"/>
-                                        <field name="quantity"/>
+                                        <field name="product_id" on_change="onchange_product(product_id, context)"/>
                                         <field name="unit_price"/>
+                                        <field name="quantity" on_change="onchange_quantity(product_id,unit_price,quantity,context)"/>
                                         <field name="currency_price"/>
                                         <field name="conversion_rate"/>
                                         <field name="total_price"/>
