@@ -143,8 +143,8 @@ class proforma_invoice(osv.osv):
 
             ## Link up with PO
             # cr.execute('update proforma_invoice set po_id=%s where id=%s',(purchase_id,pi_obj ))
-            # cr.execute('update purchase_order set pi_id=%s where id=%s',(pi_obj,purchase_id ))
-            # cr.commit()
+            cr.execute('update purchase_order set pi_id=%s where id=%s',(pi_obj.id,purchase_id ))
+            cr.commit()
             ## Ends He
 
 
@@ -233,7 +233,7 @@ class purchase_order(osv.osv):
     _inherit = "purchase.order"
 
     _columns = {
-        'pi_id': fields.many2one('proforma.invoice', 'Purchase Order')
+        'pi_id': fields.many2one('proforma.invoice', string='Purchase Order')
     }
 
 

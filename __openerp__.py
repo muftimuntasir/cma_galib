@@ -9,6 +9,7 @@
     'data': [
         'pi/pi_view.xml',
         'loan/loan_view.xml',
+        'pi/purchase_inher.xml',
     ],
     'installable': True,
     'auto_install': False,
