@@ -53,7 +53,7 @@ class proforma_invoice(osv.osv):
 
 
             for p_items in pi_obj.product_lines:
-                total_product_value += p_items.total_price
+                total_product_value += p_items.btotal_price
 
             tmp_list =[]
             fraction = 0
@@ -61,8 +61,8 @@ class proforma_invoice(osv.osv):
             for p_items in pi_obj.product_lines:
                 fraction = 0
 
-                fraction = p_items.total_price/total_product_value
-                calculated_total_cost = p_items.total_price + (total_service_value * fraction)
+                fraction = p_items.btotal_price/total_product_value
+                calculated_total_cost = p_items.btotal_price + (total_service_value * fraction)
                 quantity=p_items.quantity
 
 
@@ -91,6 +91,8 @@ class proforma_invoice(osv.osv):
             child_list=[]
 
             for product_items in pi_obj.product_lines:
+                # import pdb
+                # pdb.set_trace()
                 order_tmp_dict = {}
                 order_tmp_dict['product_id']= product_items.product_id.id
                 order_tmp_dict['product_uom']= 5
@@ -161,6 +163,41 @@ class proforma_invoice(osv.osv):
             cr.commit()
         return True
 
+
+    def add_service(self,cr,uid,ids,context=None):
+        if not ids: return []
+
+        dummy, view_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'cma_galib', 'add_service_view')
+        #
+        inv = self.browse(cr, uid, ids[0], context=context)
+        # import pdb
+        # pdb.set_trace()
+        return {
+            'name': _("Pay Invoice"),
+            'view_mode': 'form',
+            'view_id': view_id,
+            'view_type': 'form',
+            'res_model': 'add.service',
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'new',
+            'domain': '[]',
+            'context': {
+                # 'default_price': 500,
+                # # 'default_name':context.get('name', False),
+                # 'default_total_amount': 200,
+                # 'default_partner_id': self.pool.get('res.partner')._find_accounting_partner(inv.partner_id).id,
+                # 'default_amount': inv.type in ('out_refund', 'in_refund') and -inv.residual or inv.residual,
+                # 'default_reference': inv.name,
+                # 'close_after_process': True,
+                # 'invoice_type': inv.type,
+                # 'invoice_id': inv.id,
+                # 'default_type': inv.type in ('out_invoice','out_refund') and 'receipt' or 'payment',
+                # 'type': inv.type in ('out_invoice','out_refund') and 'receipt' or 'payment'
+            }
+        }
+        raise osv.except_osv(_('Error!'), _('There is no default company for the current user!'))
+
     _defaults = {
         'pi_date': fields.datetime.now,
         'state': 'pending',
@@ -230,6 +267,7 @@ class pi_product_line(osv.osv):
         'quantity':fields.float('Quantity/KG'),
         'calculated_unit_price':fields.float('Calculated Unit Price'),
         'calculated_total_price':fields.float('Calculated Total Price'),
+
     }
 
     def onchange_product(self,cr,uid,ids,product_id,pi_id,context=None):
@@ -238,7 +276,7 @@ class pi_product_line(osv.osv):
         # pi_obj=self.pool.get('proforma.invoice').browse(cr, uid, pi_id, context=None)
         # import pdb
         # pdb.set_trace()
-        abc = {'cunit_price': dep_object.list_price,'ctotal_price':dep_object.list_price}
+        abc = {'cunit_price': dep_object.list_price,'ctotal_price':dep_object.list_price,'btotal_price':dep_object.list_price}
         tests['value'] = abc
         # import pdb
         # pdb.set_trace()
@@ -249,7 +287,7 @@ class pi_product_line(osv.osv):
         dep_object = self.pool.get('product.product').browse(cr, uid, product_id, context=None)
         cunit_prices=cunit_price
         total=cunit_prices*quantity
-        abc = {'ctotal_price': total}
+        abc = {'ctotal_price': total,'btotal_price':total}
         tests['value'] = abc
         # import pdb
         # pdb.set_trace()
@@ -270,8 +308,9 @@ class pi_service_line(osv.osv):
 
     _columns = {
         'pi_id': fields.many2one('proforma.invoice', 'PI Ids', ondelete='cascade', select=True, readonly=True),
-        'service_cost': fields.float('Service Cost'),
+        'total_cost': fields.float('Service Cost'),
         'service_name': fields.char('Service name'),
+        'add_service_id': fields.many2one('add.service')
 
     }
 
