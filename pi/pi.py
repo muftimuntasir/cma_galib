@@ -162,7 +162,17 @@ class proforma_invoice(osv.osv):
             cr.execute("update proforma_invoice set state='done' where id=%s", (ids))
             cr.commit()
         return True
+    def action_cancel(self, cr, uid, ids, context=None):
+        """ Sets state to cancel.
+        @return: True
+        """
+        return self.write(cr, uid, ids, {'state':'cancel'}, context=context)
 
+    def cancel_pi(self,cr,uid,ids,context=None):
+        if ids is not None:
+            cr.execute("update proforma_invoice set state='cancel' where id=%s", (ids))
+            cr.commit()
+        return True
 
     def add_service(self,cr,uid,ids,context=None):
         if not ids: return []
@@ -203,6 +213,13 @@ class proforma_invoice(osv.osv):
         'state': 'pending',
 
     }
+    def add_services(self,cr,uid,ids,context=None):
+        values = {}
+        abc = {'service_lines': []}
+        abc['service_lines'].append([0, False, {'service_name': 'slkfja', 'total_cost': 400}])
+        values['value']=abc
+
+        return values
 
 
     def create(self, cr, uid, vals, context=None):
@@ -241,19 +258,20 @@ class pi_product_line(osv.osv):
 
 
     def _calculateunit(self,cr,uid,ids,field_name,arg,context=None):
-        # unitcalculate={}
-        # sum=0
-        # for item in self.pool.get("proforma.invoice").browse(cr,uid,ids,context=None):
-        #     # current_rate=item.equivalant
-        #     for items in self.pool.get('pi.product.line').browse(cr,uid,ids,context=None):
-        #
-        #         currencyunit=items.cunit_price
-        #         # bdtunit=current_rate*currencyunit
-        #         # import pdb
-        #         # pdb.set_trace()
-        #
-        # for record in self.browse(self,cr,uid,ids,context=None):
-        #     unitcalculate[record.id]=bdtunit
+
+    #     unitcalculate={}
+    #     sum=0
+    #     for item in self.pool.get("proforma.invoice").browse(cr,uid,ids,context=None):
+    #         current_rate=item.equivalant
+    #         for items in self.pool.get('pi.product.line').browse(cr,uid,ids,context=None):
+    #
+    #             currencyunit=items.cunit_price
+    #             # bdtunit=current_rate*currencyunit
+    #             import pdb
+    #             pdb.set_trace()
+    #
+    #     for record in self.browse(self,cr,uid,ids,context=None):
+    #         unitcalculate[record.id]=bdtunit
 
         return 0
 
@@ -269,6 +287,8 @@ class pi_product_line(osv.osv):
         'calculated_total_price':fields.float('Calculated Total Price'),
 
     }
+
+
 
     def onchange_product(self,cr,uid,ids,product_id,pi_id,context=None):
         tests = {'values': {}}

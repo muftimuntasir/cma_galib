@@ -15,6 +15,8 @@
         'pi/convert_to_pi_list.xml',
         'pi/po_pending_list.xml',
         'pi/add_service_view.xml',
+        'pi/report/proforma_report_menu.xml',
+        'pi/report/report_proforma.xml',
     ],
     'installable': True,
     'auto_install': False,

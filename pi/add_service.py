@@ -5,12 +5,16 @@ from datetime import date, time
 class add_service(osv.osv):
     _name = "add.service"
 
-    #
-    # def button_add_action(self,cr,uid,ids,context):
+
+    # def button_add_service_action(self,cr,uid,ids,context=None):
+        # eve_mee_obj = self.pool.get('proforma.invoice')
+        # for record in self.browse(cr, uid, ids, context=context):
+        #     a = eve_mee_obj.add_services(cr, uid, 20, context)
     #     # import pdb
     #     # pdb.set_trace()
-    #     return 0
-    #     #
+    #     self.pool.get("proforma.incoice").add_services(self,cr,uid,ids,context=None)
+
+        #
 
 
     _columns = {
@@ -21,6 +25,33 @@ class add_service(osv.osv):
         #                               string="Currency", readonly=True, required=True),
         # 'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute=dp.get_precision('Account')),
     }
+
+    # def create(self, cr, uid, vals, context=None):
+
+        # values={}
+        # if not package_name:
+        #     return {}
+        # # import pdb
+        # # pdb.set_trace()
+        # abc={'pi.service.line':[]}
+        # package_object=self.pool.get('examine.package').browse(cr,uid,package_name,context=None)
+        # # import pdb
+        # # pdb.set_trace()
+        # for item in package_object.examine_package_line_id:
+        #     items=item.name
+        #     for itemid in items:
+        #         car=itemid.id
+        #         abc['bill_register_line_id'].append([0, False, {'name':car, 'total_amount': 400}])
+
+        # abc={'bill_register_line_id':[[0, False, {'discount': 0, 'price': 400, 'name': 2, 'total_amount': 400}]]}
+        # abc['bill_register_line_id'].append([0, False, {'discount': 0, 'price': 400, 'name': 2, 'total_amount': 400}])
+        # values['value']=abc
+
+        # return values
+        # import pdb
+        # pdb.set_trace()
+
+
 
     # def onchange_test(self,cr,uid,ids,name,context=None):
     #     tests = {'values': {}}

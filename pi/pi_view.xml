@@ -11,7 +11,7 @@
                 <form string="PI">
                      <header>
                         <button name="confirm" string="Confirm" class="oe_highlight" type="object"/>
-                        <button name="cancel_pi" string="Cancel Receipt" type="object" />
+                        <button name="cancel_pi_invoice" string="Cancel Receipt" type="object"/>
                         <button name="convert_to_po" string="Convert to PO" type="object" confirm="Are you sure you want to create PO?"/>
                          <button name="add_service" type="object" string="Add Service"/>
                          <button name="print_pi" type="object" string="Print"/>
