@@ -2,9 +2,9 @@
 <openerp>
     <data>
 
-        <record id="add_service_view" model="ir.ui.view">
-            <field name="name">add.service.view</field>
-            <field name="model">add.service</field>
+        <record id="add_service_loan_view" model="ir.ui.view">
+            <field name="name">add.service.loan.view</field>
+            <field name="model">add.service.loan</field>
             <field name="arch" type="xml">
 
                  <form string="Add service">
@@ -17,7 +17,7 @@
 
                                     <field name="service_name"/>
                                     <field name="total_cost"/>
-                                    <field name="pi_id"/>
+                                    <field name="loan_id"/>
                     </group>
 <!--                                </tree>-->
 <!--                            </field>-->
@@ -36,9 +36,9 @@
 
 
 
-        <record id="action_add_service_view" model="ir.actions.act_window">
-            <field name="name">addbill</field>
-            <field name="res_model">add.service</field>
+        <record id="action_add_service_loan_view" model="ir.actions.act_window">
+            <field name="name">add service</field>
+            <field name="res_model">add.service.loan</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>

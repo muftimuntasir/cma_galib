@@ -9,6 +9,15 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="LOAN">
+                    <header>
+                        <button name="confirm" string="Confirm" class="oe_highlight" type="object" confirm="Are you sure you want to confirm Loan?"/>
+                        <button name="cancel_loan" string="Cancel Receipt" type="object" confirm="Are you sure you want to Cancel Loan?"/>
+                        <button name="convert_to_so" string="Convert to SO" type="object" confirm="Are you sure you want to create SO?"/>
+                        <button name="make_return" string="Return" type="object" confirm="Are you sure you want to return SO?"/>
+                         <button name="add_service" type="object" string="Add Service"/>
+                         <button name="print_loan" type="object" string="Print"/>
+
+                </header>
                     <sheet>
                         <h1>
                             <label string="loan"/>
@@ -16,6 +25,7 @@
                         <group string="Basic Information">
                             <group>
                                 <field name="customer_id"/>
+                                <field name="exp_return_date"/>
                                 <field name="description"/>
                                 <field name="total"/>
                             </group>
@@ -31,11 +41,20 @@
                                     <tree string="Select Deliveries" editable="top">
                                         <field name="product_id"/>
                                         <field name="quantity"/>
-                                        <field name="unit_price"/>
                                         <field name="currency_price"/>
                                         <field name="conversion_rate"/>
+                                        <field name="unit_price"/>
+
+
+
                                         <field name="total_price"/>
 
+                                    </tree>
+                                </field>
+                                 <field name="service_lines" mode="tree">
+                                    <tree string="Select Deliveries" editable="top">
+                                        <field name="service_name"/>
+                                        <field name="total_cost"/>
                                     </tree>
                                 </field>
                             </page>

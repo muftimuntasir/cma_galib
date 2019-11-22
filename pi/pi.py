@@ -175,6 +175,8 @@ class proforma_invoice(osv.osv):
         return True
 
     def add_service(self,cr,uid,ids,context=None):
+        # import pdb
+        # pdb.set_trace()
         if not ids: return []
 
         dummy, view_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'cma_galib', 'add_service_view')
@@ -193,6 +195,7 @@ class proforma_invoice(osv.osv):
             'target': 'new',
             'domain': '[]',
             'context': {
+                'pi_id':ids[0]
                 # 'default_price': 500,
                 # # 'default_name':context.get('name', False),
                 # 'default_total_amount': 200,
@@ -333,5 +336,8 @@ class pi_service_line(osv.osv):
         'add_service_id': fields.many2one('add.service')
 
     }
+    # def create(self,cr,uid,vals,context=None):
+    #     import pdb
+    #     pdb.set_trace()
 
 
