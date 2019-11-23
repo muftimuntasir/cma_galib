@@ -39,7 +39,78 @@ class loan(osv.osv):
 
 
     def convert_to_so(self,cr,uid,ids,context=None):
-        return True
+        for loan_obj in self.browse(cr, uid, ids, context=context):
+            # import pdb
+            # pdb.set_trace()
+            sales_vals={}
+            sales_vals["origin"] = False
+            sales_vals["incoterm"] = False
+            sales_vals["date_order"] = loan_obj.loan_date
+            sales_vals["user_id"] = 1
+            sales_vals["partner_shipping_id"] = 7
+            child_list=[]
+
+            for product_items in loan_obj.product_lines:
+                # import pdb
+                # pdb.set_trace()
+                order_tmp_dict = {}
+                order_tmp_dict['product_uos_qty']= 1
+                order_tmp_dict['product_id']= product_items.product_id.id
+                order_tmp_dict['product_uom'] = 1
+                order_tmp_dict['route_id']=False
+                order_tmp_dict['price_unit']= product_items.unit_price
+                order_tmp_dict['product_uom_qty']= 1
+                order_tmp_dict['delay']= 7
+                order_tmp_dict['product_uos']=False
+                order_tmp_dict['th_weight']=0
+                order_tmp_dict['product_packaging']=False
+                order_tmp_dict['discount']=0
+                order_tmp_dict['tax_id']=[]
+                child_list.append([0,False,order_tmp_dict])
+
+                    # 'product_uom': 5,
+                    # 'date_planned': '2019-11-18',
+                    # 'price_unit': calculated_unit_price,
+                    # 'taxes_id': [[6, False, []]],
+                    # 'product_qty': 1,
+                    # 'account_analytic_id': False,
+                    # 'name': 'Service'
+
+            sales_vals["order_line"] =child_list
+            # purchase_vals["order_line"] = [[0, False, order_tmp_dict]]
+            sales_vals["picking_policy"] = 'direct'
+            sales_vals["order_policy"] = 'manual'
+            sales_vals["payment_term"] =  False
+            sales_vals["section_id"] = False
+            sales_vals["warehouse_id"] = 1
+            sales_vals["note"] = False
+            sales_vals["message_follower_ids"] = False
+            sales_vals["fiscal_position"] = False
+            sales_vals["client_order_ref"] = False
+            sales_vals["partner_invoice_id"] = 7
+            sales_vals["pricelist_id"] = 1
+            sales_vals["project_id"] = 1
+            sales_vals["partner_id"] = loan_obj.customer_id.id
+            sales_vals["message_ids"] = False
+
+
+           ## Update By Kazi
+            #
+            # po_vals ={}
+            #
+            sale_obj = self.pool.get('sale.order')
+            purchase_id = sale_obj.create(cr, uid, vals=sales_vals, context=context)
+
+            ###
+
+            ## Link up with PO
+            # cr.execute('update proforma_invoice set po_id=%s where id=%s',(purchase_id,pi_obj ))
+            # cr.execute('update purchase_order set pi_id=%s where id=%s',(pi_obj.id,purchase_id ))
+            # cr.commit()
+            ## Ends He
+
+
+        return purchase_id
 
     def add_service(self,cr,uid,ids,context=None):
         # import pdb
@@ -83,6 +154,20 @@ class loan(osv.osv):
         'state': 'pending',
 
     }
+
+    def create(self, cr, uid, vals, context=None):
+        loan_id = super(loan, self).create(cr, uid, vals, context=context)
+        # import pdb
+        # pdb.set_trace()
+        #
+        #
+
+        if loan_id is not None:
+            sample_text = 'L-00' + str(loan_id)
+            cr.execute('update loan set name=%s where id=%s', (sample_text, loan_id))
+            cr.commit()
+
+        return loan_id
     
 
 class loan_product_line(osv.osv):
@@ -99,6 +184,32 @@ class loan_product_line(osv.osv):
         'quantity':fields.float('Quantity'),
 
     }
+
+    def onchange_product(self, cr, uid, ids, product_id, context=None):
+        tests = {'values': {}}
+        dep_object = self.pool.get('product.product').browse(cr, uid, product_id, context=None)
+        # pi_obj=self.pool.get('proforma.invoice').browse(cr, uid, pi_id, context=None)
+        # import pdb
+        # pdb.set_trace()
+        abc = {'currency_price': dep_object.list_price, 'total_price': dep_object.list_price}
+        tests['value'] = abc
+        # import pdb
+        # pdb.set_trace()
+        return tests
+
+    def onchange_quantity(self,cr,uid,ids,product_id,quantity,unit_price,context=None):
+        # import pdb
+        # pdb.set_trace()
+        tests = {'values': {}}
+        dep_object = self.pool.get('product.product').browse(cr, uid, product_id, context=None)
+        unit_prices= dep_object.list_price
+        total=unit_prices*quantity
+        abc = {'total_price': total}
+        tests['value'] = abc
+        # import pdb
+        # pdb.set_trace()
+        return tests
+
 
 class loan_service_line(osv.osv):
     _name = 'loan.service.line'

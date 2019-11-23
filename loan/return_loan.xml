@@ -3,7 +3,7 @@
     <data>
 
         <!--loan_invoice form-->
-        <record model="ir.ui.view" id="loan_form_view" >
+        <record model="ir.ui.view" id="loan_form_view_return" >
 			<field name="name">Basic Information</field>
 			<field name="model">loan</field>
             <field name="type">form</field>
@@ -67,7 +67,7 @@
 
 
         <!--loan_invoice starting action-->
-        <record model="ir.actions.act_window" id="loan_invoice_new_action" >
+        <record model="ir.actions.act_window" id="loan_invoice_new_action_return" >
 			<field name="name">loan Invoice</field>
 			<field name="res_model">loan</field>
 			<field name="view_type">form</field>
@@ -82,7 +82,7 @@
 
 
         <!--loan Invoice record list tree-->
-        <record model="ir.ui.view" id="loan_invoice_tree_view" >
+        <record model="ir.ui.view" id="loan_invoice_return_tree_view" >
             <field name="name">loan.tree</field>
             <field name="model">loan</field>
             <field name="arch" type="xml">
@@ -97,23 +97,7 @@
                 </tree>
             </field>
         </record>
-
-        <menuitem id="main_loaninvoice_menu" name="loan Invoice"/>
-
-        <menuitem id="loaninvoice_menu" name="loan Invoice" parent="main_loaninvoice_menu"/>
-        <menuitem id="loan Invoice_menu" name="loan List" parent="main_loaninvoice_menu" action="loan_invoice_new_action"/>
-
-
-        <menuitem name="loan Invoice" id="main_loaninvoice_menu"
-            groups="base.group_sale_salesman"
-            parent="base.menu_base_partner" sequence="5" />
-
-
-
-
-
-
-
+         <menuitem id="loan_return_invoice_menu" name="Loan Returned List" parent="main_loaninvoice_menu" action="loan_invoice_new_action_return"/>
 
     </data>
 </openerp>
