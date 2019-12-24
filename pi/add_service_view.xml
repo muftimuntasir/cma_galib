@@ -16,6 +16,8 @@
 <!--                                <tree string="Select Referance Value" editable="top">-->
 
                                     <field name="service_name"/>
+                                    <field name="service_cost"/>
+                                    <field name="quantity" on_change="onchange_quantity(service_cost,quantity,context)"/>
                                     <field name="total_cost"/>
                                     <field name="pi_id"/>
                     </group>

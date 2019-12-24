@@ -8,15 +8,15 @@ class add_service_loan(osv.osv):
 
     def button_add_service_action(self,cr,uid,ids,context=None):
 
-        # service_obj=self.browse(cr,uid,ids,context=None)
-        # pi_id=context.get('pi_id')
-        # eve_mee_obj = self.pool.get('pi.service.line')
-        # service_name=service_obj.service_name
-        # service_cost=service_obj.total_cost
-        # service_dict={'total_cost': service_cost, 'service_name': service_name, 'pi_id': pi_id}
-        # service_id = eve_mee_obj.create(cr, uid, vals=service_dict, context=context)
-        # return service_id
-        return True
+        service_obj=self.browse(cr,uid,ids,context=None)
+        loan_id=context.get('loan_id')
+        eve_mee_obj = self.pool.get('loan.service.line')
+        service_name=service_obj.service_name
+        service_cost=service_obj.total_cost
+        service_dict={'total_cost': service_cost, 'service_name': service_name, 'loan_id': loan_id}
+        service_id = eve_mee_obj.create(cr, uid, vals=service_dict, context=context)
+        return service_id
+
 
 
 

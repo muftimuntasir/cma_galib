@@ -16,6 +16,7 @@
                         <button name="make_return" string="Return" type="object" confirm="Are you sure you want to return SO?"/>
                          <button name="add_service" type="object" string="Add Service"/>
                          <button name="print_loan" type="object" string="Print"/>
+                        <button name="add_receipt" type="object" string="Loan Receipt"/>
 
                 </header>
                     <sheet>
@@ -28,6 +29,7 @@
                                 <field name="exp_return_date"/>
                                 <field name="description"/>
                                 <field name="total"/>
+                                <field name="pi_id" on_change="onchange_pi(pi_id, context)"/>
                             </group>
 
                         </group>
@@ -38,25 +40,40 @@
                             <page string="Products Information">
 
                                 <field name="product_lines" mode="tree">
-                                    <tree string="Select Deliveries" editable="top">
-                                        <field name="product_id" on_change="onchange_product(product_id,context)"/>
-                                        <field name="quantity" on_change="onchange_quantity(product_id,quantity,unit_price,context)"/>
-                                        <field name="currency_price"/>
-                                        <field name="conversion_rate"/>
-                                        <field name="unit_price"/>
-
-
-
-                                        <field name="total_price"/>
+                                     <tree string="Select Deliveries" editable="top">
+                                        <field name="product_id"/>
+                                        <field name="uom"/>
+                                        <field name="quantity" on_change="onchange_quantity(product_id,quantity,currencyunit_price,context)"/>
+                                        <field name="currencyunit_price" on_change="onchange_unit(product_id,quantity,currencyunit_price,context)"/>
+                                        <field name="currencytotal_price"/>
+                                        <field name="bdt_rates" on_change="onchange_conversion(product_id,currencytotal_price,currencyunit_price,bdt_rates,quantity,context)"/>
+                                        <field name="bdtunit_price"/>
+                                        <field name="bdttotal_price"/>
 
                                     </tree>
                                 </field>
+                                <field name="ptotal"/>
                                  <field name="service_lines" mode="tree">
                                     <tree string="Select Deliveries" editable="top">
                                         <field name="service_name"/>
+                                        <field name="service_cost"/>
+                                        <field name="quantity"/>
                                         <field name="total_cost"/>
                                     </tree>
                                 </field>
+                                <field name="stotal"/>
+                            </page>
+
+                            <page string="Payment Info">
+                        <field name="receipt_lines" mode="tree">
+                                    <tree string="Select Deliveries" editable="top">
+                                        <field name="date"/>
+                                        <field name="type"/>
+                                        <field name="amount"/>
+                                        <field name="usd_amount"/>
+                                    </tree>
+                                </field>
+
                             </page>
 
                         </notebook>
