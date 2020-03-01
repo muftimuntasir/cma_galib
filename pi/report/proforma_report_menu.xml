@@ -10,7 +10,16 @@
                 name="cma_galib.report_proforma"
                 file="cma_galib.report_proforma"
                 menu="True"
-
+        />
+                <report
+            id="action_report_general_ledger"
+            model="pi.report.by.vendor"
+            string="pi"
+            report_type="qweb-pdf"
+            name="cma_galib.report_proforma_popup"
+            file="cma_galib.report_proforma_popup"
+            menu="False"
+            auto="False"
         />
 
 

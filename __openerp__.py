@@ -25,6 +25,10 @@
         # 'loan/so_converted.xml',
         # 'loan/loan_report/loan_report_menu.xml',
         # 'loan/loan_report/report_loan.xml'
+        'pi/report/pi_report_common_view.xml',
+        'pi/report/pi_report_by_vendor.xml',
+        'pi/report/report_proforma_popup.xml',
+        'pi/report/pi_report_common_pi_view.xml',
     ],
     'installable': True,
     'auto_install': False,

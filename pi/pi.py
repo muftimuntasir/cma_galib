@@ -57,7 +57,6 @@ class proforma_invoice(osv.osv):
         'pi_date': fields.datetime('Date', required=True),
         'description': fields.char('Description'),
         'vendor_id': fields.many2one('res.partner', 'Vendor name', select=True),
-        'total': fields.function(calculate_total, type='float', string='Total', store=True),
         'paid':fields.float('Paid Amount'),
         'due_amount': fields.float('Due Amount'),
 
@@ -67,6 +66,7 @@ class proforma_invoice(osv.osv):
         # 'equivalant': fields.float('Conversion Rate BDT'),
         'ptotal': fields.function(calculate_product_cost,type='float',string='Product Total', store=True),
         'stotal': fields.function(calculate_service_cost,type='float',string='Service Total', store=True),
+        'total': fields.function(calculate_total, type='float', string='Total', store=True),
 
         'state': fields.selection([
             ('pending', 'Pending'),
@@ -85,6 +85,21 @@ class proforma_invoice(osv.osv):
     }
 
     def convert_to_po(self,cr,uid,ids,context=None):
+        data=self.read(cr,uid,ids,['ptotal','vendor_id'],context=context)
+        import pdb
+        pdb.set_trace()
+        # 'pi_id': fields.many2one('proforma.invoice', 'PI Ids', required=True, ondelete='cascade', select=True,
+        #                          readonly=True),
+        # 'product_id': fields.many2one('product.product', 'Product Name', required=True),
+        # 'uom': fields.selection([('kg', 'KG'), ('pound', 'Pound')], 'UoM'),
+        # 'quantity': fields.float('Quantity/KG'),
+        # 'currencyunit_price': fields.float('Foreign Price/kg'),
+        # 'currencytotal_price': fields.float('Foreign Price(TOTAL)'),
+        # 'bdt_rates': fields.float('Conversion Rate'),
+        # 'bdtunit_price': fields.float('unit price bdt'),
+        # 'bdttotal_price': fields.float('Total Price (BDT)'),
+        # 'calculated_unit_price': fields.float('Calculated Unit Price'),
+        # 'calculated_total_price': fields.float('Calculated Total Price'),
 
         for pi_obj in self.browse(cr, uid, ids, context=context):
             # import pdb
@@ -98,7 +113,7 @@ class proforma_invoice(osv.osv):
 
 
             for p_items in pi_obj.product_lines:
-                total_product_value += p_items.btotal_price
+                total_product_value += p_items.bdttotal_price
 
             tmp_list =[]
             fraction = 0
@@ -106,8 +121,8 @@ class proforma_invoice(osv.osv):
             for p_items in pi_obj.product_lines:
                 fraction = 0
 
-                fraction = p_items.btotal_price/total_product_value
-                calculated_total_cost = p_items.btotal_price + (total_service_value * fraction)
+                fraction = p_items.bdttotal_price/total_product_value
+                calculated_total_cost = p_items.bdttotal_price + (total_service_value * fraction)
                 quantity=p_items.quantity
 
 
@@ -141,7 +156,7 @@ class proforma_invoice(osv.osv):
                 order_tmp_dict = {}
                 order_tmp_dict['product_id']= product_items.product_id.id
                 order_tmp_dict['product_uom']= 5
-                order_tmp_dict['date_planned'] = '2019-11-18'
+                order_tmp_dict['date_planned'] = datetime.now()
                 order_tmp_dict['price_unit']=product_items.calculated_unit_price
                 order_tmp_dict['taxes_id']= []
                 order_tmp_dict['product_qty']= product_items.quantity
