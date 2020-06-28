@@ -10,7 +10,8 @@
             <field name="arch" type="xml">
                 <form string="PI">
                      <header>
-                        <button name="confirm" string="Confirm" class="oe_highlight" type="object" confirm="Are you sure you want to confirm PO?"/>
+                        <button name="confirm" string="Confirm" class="oe_highlight" type="object" confirm="Are you sure you want to confirm this PI ? "/>
+                        <button name="received_goods" string="Receive Goods" class="oe_highlight" type="object" confirm="Are you sure you want to Receive Goods for this PI ?"/>
                         <button name="cancel_pi" string="Cancel Receipt" type="object" confirm="Are you sure you want to cancel PO?"/>
                         <button name="convert_to_po" string="Convert to PO" type="object" confirm="Are you sure you want to create PO?"/>
                          <button name="add_service" type="object" string="Add Service"/>
@@ -24,13 +25,15 @@
                         </h1>
                         <group string="Basic Information">
                             <group>
-                                <field name="vendor_id"/>
-                                <field name="description"/>
-<!--                                <field name="curency"/>-->
-<!--                                <field name="equivalant"/>-->
-                                <field name="total"/>
-                                <field name="due_amount"/>
                                 <field name="pi_date"/>
+                                <field name="vendor_id"/>
+                                <field name="pi_ref"/>
+                                <field name="lot_no"/>
+                                <field name="description"/>
+                                <field name="total"/>
+                                <field name="paid"/>
+                                <field name="due_amount"/>
+
                             </group>
 
                         </group>

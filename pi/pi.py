@@ -55,7 +55,9 @@ class proforma_invoice(osv.osv):
     _columns = {
         'name': fields.char('PI NO'),
         'pi_date': fields.datetime('Date', required=True),
-        'description': fields.char('Description'),
+        'description': fields.text('Description'),
+        'pi_ref': fields.char('PI Reference No'),
+        'lot_no': fields.char('PI Lot No'),
         'vendor_id': fields.many2one('res.partner', 'Vendor name', select=True),
         'paid':fields.float('Paid Amount'),
         'due_amount': fields.float('Due Amount'),
@@ -66,7 +68,7 @@ class proforma_invoice(osv.osv):
         # 'equivalant': fields.float('Conversion Rate BDT'),
         'ptotal': fields.function(calculate_product_cost,type='float',string='Product Total', store=True),
         'stotal': fields.function(calculate_service_cost,type='float',string='Service Total', store=True),
-        'total': fields.function(calculate_total, type='float', string='Total', store=True),
+        'total': fields.function(calculate_total, type='float', string='Grand Total', store=True),
 
         'state': fields.selection([
             ('pending', 'Pending'),
@@ -75,6 +77,13 @@ class proforma_invoice(osv.osv):
             ('cancel', 'Cancelled'),
 
         ], 'Status', readonly=True, copy=False, help="Gives the status of the Proforma Invoices", select=True),
+        'internal_state': fields.selection([
+            ('available', 'Available'),
+            ('booked', 'Booked'),
+            ('sold', 'Sold'),
+            ('cancel', 'Cancelled'),
+
+        ], 'Internal Status', readonly=True, copy=False, help="Gives the status of the Proforma Invoices", select=True),
 
         'product_lines': fields.one2many('pi.product.line', 'pi_id', 'PI Product Lines', required=True),
         'service_lines': fields.one2many('pi.service.line', 'pi_id', 'PI Service Lines', required=False),
@@ -86,8 +95,7 @@ class proforma_invoice(osv.osv):
 
     def convert_to_po(self,cr,uid,ids,context=None):
         data=self.read(cr,uid,ids,['ptotal','vendor_id'],context=context)
-        import pdb
-        pdb.set_trace()
+
         # 'pi_id': fields.many2one('proforma.invoice', 'PI Ids', required=True, ondelete='cascade', select=True,
         #                          readonly=True),
         # 'product_id': fields.many2one('product.product', 'Product Name', required=True),
@@ -225,50 +233,15 @@ class proforma_invoice(osv.osv):
         return result
 
     def confirm(self,cr,uid,ids,context=None):
-        for pi_obj in self.browse(cr, uid, ids, context=context):
-            # import pdb
-            # pdb.set_trace()
 
-            total_service_value = 0
-            total_product_value = 0
-
-            for s_items in pi_obj.service_lines:
-                total_service_value += s_items.total_cost
-
-
-            for p_items in pi_obj.product_lines:
-                total_product_value += p_items.bdttotal_price
-
-            tmp_list =[]
-            fraction = 0
-            quantity=0
-            for p_items in pi_obj.product_lines:
-                fraction = 0
-
-                fraction = p_items.bdttotal_price/total_product_value
-                calculated_total_cost = p_items.bdttotal_price + (total_service_value * fraction)
-                quantity=p_items.quantity
-
-
-                if p_items.quantity > 0:
-                    calculated_unit_price = calculated_total_cost / p_items.quantity
-                else:
-                    calculated_unit_price = 0
-
-                tmp_list.append(
-                    {
-                        'product_id':p_items.product_id.id,
-                        'calculated_unit_price':calculated_unit_price,
-                        'calculated_total_cost':calculated_total_cost,
-                        'id':p_items.id
-                    }
-                )
-            for item in tmp_list:
-                cr.execute('update pi_product_line set calculated_unit_price=%s where id=%s', (item.get("calculated_unit_price"),item.get("id")))
-                cr.execute('update pi_product_line set calculated_total_price=%s where id=%s', (item.get("calculated_total_cost"),item.get("id")))
-                cr.commit()
         if ids is not None:
-            cr.execute("update proforma_invoice set state='done' where id=%s", (ids))
+            cr.execute("update proforma_invoice set state='confirm' where id=%s", (ids))
+            cr.commit()
+        return True
+
+    def received_goods(self,cr,uid,ids,context=None):
+        if ids is not None:
+            cr.execute("update proforma_invoice set state='received',internal_state='available' where id=%s", (ids))
             cr.commit()
         return True
     def action_cancel(self, cr, uid, ids, context=None):
@@ -322,8 +295,7 @@ class proforma_invoice(osv.osv):
 
 
     def add_payment(self,cr,uid,ids,context=None):
-        # import pdb
-        # pdb.set_trace()
+
         if not ids: return []
 
         dummy, view_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'cma_galib', 'pi_payment_form_view')
@@ -342,7 +314,7 @@ class proforma_invoice(osv.osv):
             'target': 'new',
             'domain': '[]',
             'context': {
-                'pi_id':ids[0]
+                'pi_id':inv.id,
                 # 'default_price': 500,
                 # # 'default_name':context.get('name', False),
                 # 'default_total_amount': 200,
@@ -432,10 +404,11 @@ class pi_product_line(osv.osv):
         'product_id': fields.many2one('product.product', 'Product Name', required=True),
         'uom': fields.selection([('kg', 'KG'), ('pound', 'Pound')], 'UoM'),
         'quantity': fields.float('Quantity/KG'),
+        'available_qty': fields.float('Available Quantity'),
         'currencyunit_price':fields.float('Foreign Price/kg'),
         'currencytotal_price': fields.float('Foreign Price(TOTAL)'),
         'bdt_rates': fields.float('Conversion Rate'),
-        'bdtunit_price': fields.float('unit price bdt'),
+        'bdtunit_price': fields.float('Unit Price (BDT)'),
         'bdttotal_price':fields.float('Total Price (BDT)'),
         'calculated_unit_price':fields.float('Calculated Unit Price'),
         'calculated_total_price':fields.float('Calculated Total Price'),
@@ -515,10 +488,11 @@ class pi_payment(osv.osv):
 
 
     _columns = {
-        'pi_id': fields.many2one('proforma.invoice', 'PI ID', ondelete='cascade', select=True, readonly=True),
+        'pi_id': fields.many2one('proforma.invoice', 'PI ID', ondelete='cascade', select=True,required=True, readonly=True),
         'amount': fields.float('Amount', required=True),
-        'date': fields.datetime('Date'),
+        'date': fields.datetime('Date',required=True),
         'type': fields.char('Type'),
+        'comments': fields.text('Description/Comments'),
         'usd_amount': fields.float('USD')
     }
     # def create(self,cr,uid,vals,context=None):

@@ -61,6 +61,7 @@ class pi_payment(osv.osv):
         'type': fields.char('Type'),
         'usd_amount':fields.float('USD'),
         'pi_id': fields.many2one('proforma.invoice', 'PI ID'),
+        'partner_id': fields.many2one('res.partner', 'Vendor Name'),
 
     }
 

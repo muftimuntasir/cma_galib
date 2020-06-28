@@ -44,5 +44,7 @@ class loan_receipt(osv.osv):
         'date': fields.datetime('Date'),
         'type': fields.char('Type'),
         'usd_amount': fields.float('Amount(USD)'),
+        'partner_id': fields.many2one('res.partner', 'Customer Name'),
+
         'con_rate': fields.float('Conversion Rate')
     }

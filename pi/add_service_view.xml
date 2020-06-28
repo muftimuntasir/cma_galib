@@ -24,10 +24,7 @@
 <!--                                </tree>-->
 <!--                            </field>-->
 
-                             <footer>
-                        <button name="button_add_service_action" string="Add" class="oe_highlight" type="object"/> or
-                        <button string="Cancel" class="oe_link" special="cancel"/>
-                    </footer>
+
                 </sheet>
             </form>
 

@@ -12,19 +12,15 @@
 
                         <group string="Basic Information">
                             <group>
-
-                                <field name="amount"/>
                                 <field name="date"/>
-                                <field name="type"/>
+                                <field name="loan_id"/>
+                                <field name="partner_id"/>
+                                <field name="amount"/>
                                 <field name="usd_amount"/>
-                                <field name="con_rate"/>
                             </group>
 
                         </group>
-                               <footer>
-                        <button name="button_add_receipt_action" string="Add" class="oe_highlight" type="object"/> or
-                        <button string="Cancel" class="oe_link" special="cancel"/>
-                    </footer>
+
 
                         <!--Tab information-->
                     </sheet>
@@ -56,6 +52,7 @@
                 <tree string="Proforma Invoice List" default_order='id desc'>
 
 
+                                <field name="partner_id"/>
                                 <field name="amount"/>
                                 <field name="date"/>
                                 <field name="type"/>

@@ -12,18 +12,17 @@
 
                         <group string="Basic Information">
                             <group>
-                                <field name="pi_id"/>
-                                <field name="amount"/>
                                 <field name="date"/>
-                                <field name="type"/>
+                                <field name="pi_id"/>
+                                <field name="partner_id"/>
                                 <field name="amount"/>
+                                <field name="usd_amount"/>
+
+
                             </group>
 
                         </group>
-                                                     <footer>
-                        <button name="button_add_payment_action" string="Add" class="oe_highlight" type="object"/> or
-                        <button string="Cancel" class="oe_link" special="cancel"/>
-                    </footer>
+
 
                         <!--Tab information-->
                     </sheet>
@@ -79,8 +78,9 @@
             <field name="model">pi.payment</field>
             <field name="arch" type="xml">
                 <tree string="Proforma Invoice List" default_order='id desc'>
+                                <field name="partner_id"/>
 
-
+                                <field name="pi_id"/>
                                 <field name="amount"/>
                                 <field name="date"/>
                                 <field name="type"/>
